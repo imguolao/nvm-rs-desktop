@@ -1,7 +1,18 @@
-# Tauri + React + Typescript
+# nvm-rs-desktop
 
-This template should help get you started developing with Tauri, React and Typescript in Vite.
+🚀A desktop application to manage node.js versions, built in Rust and Tauri.
 
-## Recommended IDE Setup
+## Usage
 
-- [VS Code](https://code.visualstudio.com/) + [Tauri](https://marketplace.visualstudio.com/items?itemName=tauri-apps.tauri-vscode) + [rust-analyzer](https://marketplace.visualstudio.com/items?itemName=rust-lang.rust-analyzer)
+🚧Under construction...
+
+## Inspiration
+
+`nvm-rs-desktop` is made possible thanks to the inspirations from the following projects:
+
+- [fnm](https://github.com/Schniz/fnm)
+- [tauri](https://github.com/tauri-apps/tauri)
+
+## License
+
+[MIT](LICENSE)
