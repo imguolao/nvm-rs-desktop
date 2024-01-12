@@ -2,7 +2,7 @@ use reqwest::blocking::Client;
 
 pub type Error = reqwest::Error;
 
-pub type Response = reqwest::Response;
+pub type Response = reqwest::blocking::Response;
 
 pub fn get(url: &str) -> Result<Response, Error> {
   Client::new()
