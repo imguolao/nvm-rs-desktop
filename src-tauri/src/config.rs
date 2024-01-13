@@ -1,18 +1,25 @@
 use std::path;
+use serde::Serialize;
 use dirs::{data_dir, home_dir};
+use url::Url;
 use crate::path_ext::PathExt;
 
-#[derive(Debug)]
+#[derive(Serialize, Debug)]
 pub struct NVMDeskTopConfig {
-  pub base_dir: Option<path::PathBuf>,
+    /// https://nodejs.org/dist/ mirror
+    pub node_dist_mirror: Url,
+
+    /// The root directory of nvm-rs desktop installations.
+    pub base_dir: Option<path::PathBuf>,
 }
 
 impl Default for NVMDeskTopConfig {
-  fn default() -> Self {
-    Self {
-      base_dir: None,
+    fn default() -> Self {
+        Self {
+            node_dist_mirror: Url::parse("https://nodejs.org/dist/").unwrap(),
+            base_dir: None,
+        }
     }
-  }
 }
 
 impl NVMDeskTopConfig {
