@@ -1,53 +1,64 @@
-use std::path;
-use serde::Serialize;
-use dirs::{data_dir, home_dir};
+use anyhow::{anyhow, Result};
+use std::io::Read;
+use std::path::{Path, PathBuf};
+use std::fs::File;
+use serde::{Serialize, Deserialize};
+use dirs::home_dir;
 use url::Url;
-use crate::path_ext::PathExt;
 
-#[derive(Serialize, Debug)]
-pub struct NVMDeskTopConfig {
+#[derive(Serialize, Deserialize, Debug)]
+pub struct DesktopConfig {
     /// https://nodejs.org/dist/ mirror
     pub node_dist_mirror: Url,
 
     /// The root directory of nvm-rs desktop installations.
-    pub base_dir: Option<path::PathBuf>,
+    pub base_dir: PathBuf,
 }
 
-impl Default for NVMDeskTopConfig {
-    fn default() -> Self {
-        Self {
-            node_dist_mirror: Url::parse("https://nodejs.org/dist/").unwrap(),
-            base_dir: None,
+impl DesktopConfig {
+    pub fn new() -> Result<Self> {
+        let config_file_path_buf = get_config_file_path()?;
+        let config_file_path = config_file_path_buf.as_path();
+
+        if let Some(config) = read_config_from_file(&config_file_path)? {
+            return Ok(config);
         }
+
+        let base_dir = home_dir()
+            .ok_or(anyhow!("Can't get the user home directory address."))?
+            .join(".nvm_rs_desktop");
+
+        Ok(DesktopConfig {
+            node_dist_mirror: Url::parse("https://nodejs.org/dist/")?,
+            base_dir,
+        })
     }
 }
 
-impl NVMDeskTopConfig {
-  pub fn base_dir_with_default(&self) -> path::PathBuf {
-    let user_pref = self.base_dir.clone();
-    if let Some(dir) = user_pref {
-      return dir;
+/// Read the configuration from the local file.
+fn read_config_from_file(file_path: &Path) -> Result<Option<DesktopConfig>> {
+    if file_path.exists() {
+        let mut file = File::open(file_path)?;
+        let mut contents = String::new();
+
+        let _ = file.read_to_string(&mut contents);
+
+        let config: DesktopConfig = serde_json::from_str(&contents)?;
+
+        return Ok(Some(config));
     }
 
-    let dir_name = ".nvm_rs_desktop";
-    let legacy = home_dir()
-      .map(|dir| dir.join(dir_name))
-      .filter(|dir| dir.exists());
+    Ok(None)
+}
 
-    if let Some(dir) = legacy {
-      return dir;
-    }
+/// Get the config file path.
+fn get_config_file_path() -> Result<PathBuf> {
+    let file_path_pref = match home_dir() {
+        Some(dir) => dir,
+        None => {
+            return Err(anyhow!("Can't get the user home directory address."));
+        },
+    };
 
-    let modern = data_dir().map(|dir| dir.join(dir_name));
-    modern
-      .expect("Can't get data directory")
-      .ensure_exists_silently()
-  }
-
-  pub fn installations_dir(&self) -> path::PathBuf {
-    self
-      .base_dir_with_default()
-      .join("node_versions")
-      .ensure_exists_silently()
-  }
+    Ok(file_path_pref.join(".nvm_rs_desktop.config"))
 }

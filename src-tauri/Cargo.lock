@@ -1792,8 +1792,8 @@ dependencies = [
 name = "nvm-rs-desktop"
 version = "0.0.0"
 dependencies = [
+ "anyhow",
  "dirs",
- "log",
  "reqwest",
  "serde",
  "serde_json",
