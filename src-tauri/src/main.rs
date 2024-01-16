@@ -11,5 +11,5 @@ fn main() {
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![get_desktop_config])
         .run(tauri::generate_context!())
-        .expect("error while running tauri application");
+        .expect("error while running nvm rs desktop application");
 }

@@ -31,7 +31,7 @@ export async function callInvokeHandler<T extends DataType[keyof DataType]>(
         const { success, data, message } = await invoke<Message<T>>(handlerName);
         if (!success) {
             // TODO: need i18n
-            throw new Error(message ?? 'Unexpected error！');
+            throw new Error(message ?? 'Sorry, an unexpected error has occurred.');
         }
 
         return data;
