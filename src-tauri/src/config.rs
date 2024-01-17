@@ -1,7 +1,7 @@
 use anyhow::{anyhow, Result};
-use std::io::Read;
+use std::io::{Read, Write};
 use std::path::{Path, PathBuf};
-use std::fs::File;
+use std::fs::{File, OpenOptions};
 use serde::{Serialize, Deserialize};
 use dirs::home_dir;
 use url::Url;
@@ -17,10 +17,9 @@ pub struct DesktopConfig {
 
 impl DesktopConfig {
     pub fn new() -> Result<Self> {
-        let config_file_path_buf = get_config_file_path()?;
-        let config_file_path = config_file_path_buf.as_path();
-
-        if let Some(config) = read_config_from_file(&config_file_path)? {
+        let file_path = get_config_file_path()?;
+        let file_path = file_path.as_path();
+        if let Some(config) = read_config_from_file(file_path)? {
             return Ok(config);
         }
 
@@ -28,10 +27,22 @@ impl DesktopConfig {
             .ok_or(anyhow!("Can't get the user home directory address."))?
             .join(".nvm_rs_desktop");
 
-        Ok(DesktopConfig {
+        let config = DesktopConfig {
             node_dist_mirror: Url::parse("https://nodejs.org/dist/")?,
             base_dir,
-        })
+        };
+
+        let serialized_config = serde_json::to_string(&config)?;
+        write_config_into_file(file_path, &serialized_config)?;
+
+        Ok(config)
+    }
+
+    pub fn save(&self) -> Result<()> {
+        let file_path = get_config_file_path()?;
+        let serialized_config = serde_json::to_string(&self)?;
+        write_config_into_file(file_path.as_path(), &serialized_config)?;
+        Ok(())
     }
 }
 
@@ -40,15 +51,23 @@ fn read_config_from_file(file_path: &Path) -> Result<Option<DesktopConfig>> {
     if file_path.exists() {
         let mut file = File::open(file_path)?;
         let mut contents = String::new();
-
         let _ = file.read_to_string(&mut contents);
-
         let config: DesktopConfig = serde_json::from_str(&contents)?;
-
         return Ok(Some(config));
     }
 
     Ok(None)
+}
+
+/// Write the configuration into the local file.
+fn write_config_into_file(file_path: &Path, contents: &String) -> Result<()> {
+    let mut file = OpenOptions::new()
+            .write(true)
+            .truncate(true)
+            .create_new(true)
+            .open(file_path)?;
+    file.write_all(contents.as_bytes())?;
+    Ok(())
 }
 
 /// Get the config file path.

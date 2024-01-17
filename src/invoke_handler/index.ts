@@ -40,3 +40,7 @@ export async function callInvokeHandler<T extends DataType[keyof DataType]>(
         return null;
     }
 }
+
+export async function getDeskTopConfig() {
+    return await callInvokeHandler<DesktopConfig>(INVOKE_HANDLER.desktopConfig);
+}
