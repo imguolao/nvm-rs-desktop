@@ -7,7 +7,7 @@ import {
     webDarkTheme,
 } from '@fluentui/react-components';
 import { router } from '@/routes';
-import { configAtom, getDefaultBaseDir } from '@/hooks/config';
+import { configAtom, getDefaultBaseDir } from '@/atoms/config';
 import { appWindow } from '@tauri-apps/api/window';
 import type { UnlistenFn } from '@tauri-apps/api/event';
 

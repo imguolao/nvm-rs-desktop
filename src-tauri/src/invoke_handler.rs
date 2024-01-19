@@ -1,6 +1,5 @@
-use crate::config::DesktopConfig;
+use std::process::Command;
 use serde::{Serialize, Deserialize};
-use tauri::{Manager, Window};
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Message<T> {
@@ -9,18 +8,38 @@ pub struct Message<T> {
     message: Option<String>,
 }
 
+#[derive(Serialize, Deserialize, Debug)]
+pub struct NodeVersion {
+    version: String,
+}
+
 #[tauri::command]
-pub fn get_desktop_config() -> Message<DesktopConfig> {
-    match DesktopConfig::new() {
-        Ok(config) => Message {
-            data: Some(config),
+pub fn get_node_version() -> Message<NodeVersion> {
+    let output = match Command::new("node")
+        .arg("--version")
+        .output() {
+            Ok(output) => output,
+            Err(err) => {
+                return Message {
+                    data: None,
+                    message: Some(err.to_string()),
+                    success: false,
+                };
+            }
+        };
+
+    if output.status.success() {
+        let version = String::from_utf8_lossy(&output.stdout);
+        return Message {
+            data: Some(NodeVersion { version: version.to_string() }),
             message: None,
             success: true,
-        },
-        Err(err) => Message {
-            data: None,
-            message: Some(err.to_string()),
-            success: false,
-        }
+        };
+    }
+
+    Message {
+        data: None,
+        message: None,
+        success: false,
     }
 }

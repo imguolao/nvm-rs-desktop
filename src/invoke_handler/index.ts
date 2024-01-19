@@ -6,22 +6,16 @@ export type Message<T> = {
     message?: string;
 }
 
-// src-tauri\src\config.rs(10)
-export type DesktopConfig = {
-    // https://nodejs.org/dist/ mirror
-    node_dist_mirror: string;
-
-    // The root directory of nvm-rs desktop installations.
-    base_dir: string;
+export type NodeVersion = {
+    version: string;
 }
 
 export enum INVOKE_HANDLER {
-    // src-tauri\src\invoke_handler.rs(12)
-    desktopConfig = 'get_desktop_config',
+    nodeVersion = 'get_node_version',
 }
 
 export type DataType = {
-    [INVOKE_HANDLER.desktopConfig]: DesktopConfig;
+    [INVOKE_HANDLER.nodeVersion]: NodeVersion;
 }
 
 export async function callInvokeHandler<T extends DataType[keyof DataType]>(
@@ -41,6 +35,6 @@ export async function callInvokeHandler<T extends DataType[keyof DataType]>(
     }
 }
 
-export async function getDeskTopConfig() {
-    return await callInvokeHandler<DesktopConfig>(INVOKE_HANDLER.desktopConfig);
+export async function getNodeVersion() {
+    return await callInvokeHandler<NodeVersion>(INVOKE_HANDLER.nodeVersion);
 }

@@ -13,7 +13,7 @@ import {
 import {
     type DesktopConfig,
     configAtom,
-} from '@/hooks/config';
+} from '@/atoms/config';
 import { isString } from '@/utils';
 import NodeMirrorInput from './node_mirror_input';
 
