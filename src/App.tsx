@@ -1,11 +1,53 @@
+import { useEffect, useState } from 'react';
 import { RouterProvider } from 'react-router-dom';
+import { useAtom } from 'jotai';
+import { 
+    FluentProvider,
+    webLightTheme,
+    webDarkTheme,
+} from '@fluentui/react-components';
 import { router } from '@/routes';
+import { configAtom, getDefaultBaseDir } from '@/hooks/config';
+import { appWindow } from '@tauri-apps/api/window';
+import type { UnlistenFn } from '@tauri-apps/api/event';
 
 function App() {
+    const [config, setConfig] = useAtom(configAtom);
+    const [isDark, setIsDark] = useState<boolean>(false);
+    
+    useEffect(() => {
+        if (!config.baseDir) {
+            (async () => {
+                const baseDir = await getDefaultBaseDir();
+                setConfig({
+                    ...config,
+                    baseDir,
+                });
+            })();
+        }
+    }, []);
+
+    useEffect(() => {
+        let unlisten: UnlistenFn | undefined;
+        if (config.theme === 'system') {
+            (async () => {
+                const osTheme = await appWindow.theme();
+                setIsDark(osTheme === 'dark');
+                unlisten = await appWindow.onThemeChanged(({ payload: theme }) => {
+                    setIsDark(theme === 'dark');
+                });
+            })();
+        } else {
+            setIsDark(config.theme === 'dark');
+        }
+
+        return () => unlisten?.();
+    }, [config]);
+
     return (
-        <>
+        <FluentProvider theme={isDark ? webDarkTheme : webLightTheme}>
             <RouterProvider router={router} />
-        </>
+        </FluentProvider>
     );
 }
 

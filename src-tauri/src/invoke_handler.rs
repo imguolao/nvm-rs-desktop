@@ -1,5 +1,6 @@
 use crate::config::DesktopConfig;
 use serde::{Serialize, Deserialize};
+use tauri::{Manager, Window};
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Message<T> {
