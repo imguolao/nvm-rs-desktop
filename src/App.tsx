@@ -10,6 +10,7 @@ import { router } from '@/routes';
 import { configAtom, getDefaultBaseDir } from '@/atoms/config';
 import { appWindow } from '@tauri-apps/api/window';
 import type { UnlistenFn } from '@tauri-apps/api/event';
+import ErrorModal from '@/components/error';
 
 function App() {
     const [config, setConfig] = useAtom(configAtom);
@@ -47,6 +48,7 @@ function App() {
     return (
         <FluentProvider theme={isDark ? webDarkTheme : webLightTheme}>
             <RouterProvider router={router} />
+            <ErrorModal />
         </FluentProvider>
     );
 }

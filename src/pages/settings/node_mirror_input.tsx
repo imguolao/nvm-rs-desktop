@@ -30,6 +30,7 @@ export default function NodeMirrorInput({ nodeMirror, onSave }: {
     const classes = useStackClassName();
     const inputRef = useRef<HTMLInputElement>(null);
     const [readOnly, setReadOnly] = useState(true);
+    const [currValue, setCurrValue] = useState(nodeMirror);
     const [validation, setValidation] = useState<{
         msg: string;
         state: FieldProps['validationState'];
@@ -45,14 +46,13 @@ export default function NodeMirrorInput({ nodeMirror, onSave }: {
             return;
         }
 
-        const url = inputRef.current?.value ?? '';
-        if (isHttpUrl(url)) {
+        if (isHttpUrl(currValue)) {
             setValidation({
                 msg: '',
                 state: 'none',
             });
             setReadOnly(true);
-            onSave(url);
+            onSave(currValue);
         } else {
             setValidation({
                 msg: 'Please enter the http url.',
@@ -63,9 +63,7 @@ export default function NodeMirrorInput({ nodeMirror, onSave }: {
 
     const handleCancel = () => {
         setReadOnly(true);
-        if (inputRef.current) {
-            inputRef.current.value = nodeMirror;
-        }
+        setCurrValue(nodeMirror);
     }
     
     return (
@@ -80,7 +78,8 @@ export default function NodeMirrorInput({ nodeMirror, onSave }: {
                     ref={inputRef}
                     className={classes.input}
                     readOnly={readOnly}
-                    defaultValue={nodeMirror}
+                    value={currValue}
+                    onChange={(_ev, { value }) => setCurrValue(value)}
                 />
                 <Button
                     appearance={readOnly ? undefined : 'primary'}

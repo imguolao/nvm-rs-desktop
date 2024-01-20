@@ -5,7 +5,7 @@ import {
     makeStyles,
     tokens,
 } from '@fluentui/react-components';
-import SettingIcon from '@/components/icons/setting';
+import { Settings24Regular as SettingIcon } from '@fluentui/react-icons';
 import { getNodeVersion } from '@/invoke_handler';
 
 const useStackClassName = makeStyles({

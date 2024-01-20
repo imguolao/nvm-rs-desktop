@@ -21,8 +21,8 @@ const themes: DesktopConfig['theme'][] = ['light', 'dark', 'system'];
 
 const useStackClassName = makeStyles({
     root: {
-        display: "flex",
-        flexDirection: "column",
+        display: 'flex',
+        flexDirection: 'column',
         rowGap: tokens.spacingVerticalL,
     },
     storageWrapper: {

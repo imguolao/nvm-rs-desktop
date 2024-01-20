@@ -1,4 +1,5 @@
 import { invoke } from '@tauri-apps/api/tauri';
+import { error } from '@/atoms/error';
 
 export type Message<T> = {
     data: T;
@@ -24,13 +25,12 @@ export async function callInvokeHandler<T extends DataType[keyof DataType]>(
     try {
         const { success, data, message } = await invoke<Message<T>>(handlerName);
         if (!success) {
-            // TODO: need i18n
             throw new Error(message ?? 'Sorry, an unexpected error has occurred.');
         }
 
         return data;
-    } catch (err) {
-        // TODO: need to pop-up a window to show errors.
+    } catch (err: any) {
+        error(err?.message ?? 'Sorry, an unexpected error has occurred.');
         return null;
     }
 }
