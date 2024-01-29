@@ -7,7 +7,7 @@ import {
     webDarkTheme,
 } from '@fluentui/react-components';
 import { router } from '@/routes';
-import { configAtom, getDefaultBaseDir } from '@/atoms/config';
+import { configAtom, themeAtom, getDefaultBaseDir } from '@/atoms/config';
 import { appWindow } from '@tauri-apps/api/window';
 import type { UnlistenFn } from '@tauri-apps/api/event';
 import ErrorModal from '@/components/error';
@@ -15,6 +15,7 @@ import './app.css';
 
 function App() {
     const [config, setConfig] = useAtom(configAtom);
+    const [theme] = useAtom(themeAtom);
     const [isDark, setIsDark] = useState<boolean>(false);
     
     useEffect(() => {
@@ -31,7 +32,7 @@ function App() {
 
     useEffect(() => {
         let unlisten: UnlistenFn | undefined;
-        if (config.theme === 'system') {
+        if (theme === 'system') {
             (async () => {
                 const osTheme = await appWindow.theme();
                 setIsDark(osTheme === 'dark');
@@ -40,11 +41,11 @@ function App() {
                 });
             })();
         } else {
-            setIsDark(config.theme === 'dark');
+            setIsDark(theme === 'dark');
         }
 
         return () => unlisten?.();
-    }, [config]);
+    }, [theme]);
 
     return (
         <FluentProvider theme={isDark ? webDarkTheme : webLightTheme}>

@@ -1,3 +1,4 @@
+import { atom } from 'jotai';
 import { atomWithStorage } from 'jotai/utils';
 import { type Theme } from '@tauri-apps/api/window';
 import { homeDir, dataDir, join } from '@tauri-apps/api/path';
@@ -21,6 +22,11 @@ const initValue = getConfigFromLocalStorge() ?? {
 };
 
 export const configAtom = atomWithStorage<DesktopConfig>(CONFIG_KEY, initValue);
+export const themeAtom = atom((get) => get(configAtom).theme);
+export const versionURLAtom = atom((get) => {
+    const pref = get(configAtom).nodeDistMirror.replace(/\/$/, '');
+    return `${pref}/index.json`;
+});
 
 export async function getDefaultBaseDir() {
     const baseDirPref = await homeDir() ?? await dataDir();
