@@ -1,10 +1,9 @@
-import { error } from '@/atoms/error';
-
-export async function http(...agrs: Parameters<typeof fetch>) {
-    try {
-        return await fetch(...agrs);
-    } catch (err: any) {
-        error(err?.message ?? 'Sorry, an unexpected error has occurred.');
+export async function http<T extends any>(...agrs: Parameters<typeof fetch>): Promise<T | null> {
+    const response = await fetch(...agrs);
+    if (!response.ok) {
+        // throw new Error(response.statusText);
         return null;
     }
+
+    return await (response.json() as T);
 }
