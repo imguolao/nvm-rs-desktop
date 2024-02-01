@@ -1,11 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { RouterProvider } from 'react-router-dom';
 import { useAtom } from 'jotai';
-import { 
-    FluentProvider,
-    webLightTheme,
-    webDarkTheme,
-} from '@fluentui/react-components';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { router } from '@/routes';
 import { configAtom, themeAtom, getDefaultBaseDir } from '@/atoms/config';
 import { appWindow } from '@tauri-apps/api/window';
@@ -47,11 +43,19 @@ function App() {
         return () => unlisten?.();
     }, [theme]);
 
+    const muiTheme = useMemo(() => {
+        return createTheme({
+            palette: {
+                mode: isDark ? 'dark' : 'light',
+            },
+        }),
+    }, [isDark]);
+
     return (
-        <FluentProvider theme={isDark ? webDarkTheme : webLightTheme}>
+        <ThemeProvider theme={muiTheme}>
             <RouterProvider router={router} />
             <ErrorModal />
-        </FluentProvider>
+        </ThemeProvider>
     );
 }
 
