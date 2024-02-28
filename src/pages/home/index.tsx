@@ -1,12 +1,12 @@
-import { Suspense, useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
-    Spinner,
     makeStyles,
     tokens,
 } from '@fluentui/react-components';
 import { Settings24Regular as SettingIcon } from '@fluentui/react-icons';
 import { getNodeVersion } from '@/invoke_handler';
+import { VersionCollapse } from './version';
 
 const useStackClassName = makeStyles({
     versionLabel: {
@@ -35,10 +35,9 @@ export default function Home() {
             <Link to={'/error'}>go to the error page</Link>
             <div>
                 <span className={classes.versionLabel}>Current node version:</span>
-                <Suspense fallback={<Spinner size="extra-tiny" />}>
-                    <span>{version}</span>
-                </Suspense>
+                <span>{version}</span>
             </div>
+            <VersionCollapse />
             <SettingIcon onClick={handleJumpToSettingPage} />
         </>
     );
