@@ -4,7 +4,7 @@
 
 ## Usage
 
-🚧Under construction...
+On hold: 🚧waiting for tauri 2.0 to be released.
 
 ## Inspiration
 
